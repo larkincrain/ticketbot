@@ -1,0 +1,34 @@
+{
+  "functions" : [
+
+    {
+      "name" : "authentication",
+
+      "description" : "login with the credentials",
+
+      "difficulty" : "easy",
+
+      "start_date" : "september 11th, 2017"
+    },
+
+    {
+      "name" : "get all open tickets.",
+
+      "description" : "get's all the open tickets for every user in every milestone.",
+
+      "difficulty" : "medium",
+
+      "start_date" : "null"
+    },
+
+    {
+      "name" : "get open tickets per user.",
+
+      "description" : "get's all of the user's tickets that are open. This means that all tickets in New In-Progress or Ready status will be returned.",
+
+      "difficulty" : "medium",
+
+      "start_date" : "null"
+    }
+  ]
+}
