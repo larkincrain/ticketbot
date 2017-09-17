@@ -2,21 +2,12 @@
 var _ = require('lodash');
 var https = require('https');
 var q = require ('q');
+var util = require('util');
+var path = require('path');
+var fs = require('fs');
+
 var Bot = require('slackbots');
 var credentials = require('./credentials.json');
-
-// create a bot
-var settings = {
-    token: credentials.slack_token,
-    name: credentials.name
-};
-var bot = new Bot(settings);
-
-bot.on('start', function() {
-    bot.postMessageToChannel('some-channel-name', 'Hello channel!');
-    bot.postMessageToUser('some-username', 'hello bro!');
-    bot.postMessageToGroup('some-private-group', 'hello group chat!');
-});
 
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var RTM_CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS.RTM;
@@ -24,23 +15,18 @@ var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 var RtmClient = require('@slack/client').RtmClient;
 
 var token = credentials.slack_token;
-var ticketbot = new RtmClient(token, {logLvel: 'debug'});
+var griffBot = new RtmClient(token, {logLvel: 'debug'});
 
 var teamConversationList = {};
 var teamMembersLists = {};
 
-var assembleInfo = {
-  users : [],
-  milestones : []
-};
-
 var mobileEnrollmentConversation;
 
 //Start the Real Time Messaging app!
-ticketbot.start();
+griffBot.start();
 
 //Check to see if we're authenticated
-ticketbot.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
+griffBot.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
   console.log('Logged in as ' + rtmStartData.self.name + ' of team ' + rtmStartData.team.name + ', but not yet connected');
   console.log('Start Data: ');
   //console.log(rtmStartData);
@@ -57,25 +43,26 @@ ticketbot.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
 });
 
 
-ticketbot.on(RTM_EVENTS.MESSAGE, function (message) {
+griffBot.on(RTM_EVENTS.MESSAGE, function (message) {
   // Listens to all `message` events from the team
+
   console.log('New message: ');
   console.log(message);
 
-  if (message.text.indexOf('hey ticketbot') > -1 ) {
+  if (message.text.indexOf('ticketbot') > -1 ) {
     //then we shoudl respond with sarcasm!
-    ticketbot.sendMessage(
-      'https://app.assembla.com/spaces/oaftrac/tickets/6764-unlock-code-for-a-particular-serial-number-is-returning-0-length-code',
+    griffBot.sendMessage(
+      ':face_with_rolling_eyes: ' + message.text,
       message.channel,
       function (){
         console.log('Sassed em good, boss');
       }
     );
   }
-  else if (message.text.indexOf('ticketbot') > -1 && message.text.indexOf('status') > -1) {
+  else if (message.text.indexOf('eric') > -1 && message.text.indexOf('question') > -1) {
     console.log('we got a question boss!');
 
-    ticketbot.sendMessage(
+    griffBot.sendMessage(
       ':thinking_face: Interesting...Interesting.',
       message.channel,
       function (){
@@ -86,7 +73,7 @@ ticketbot.on(RTM_EVENTS.MESSAGE, function (message) {
 });
 
 // you need to wait for the client to fully connect before you can send messages
-ticketbot.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
+griffBot.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
 
   console.log('Connected to the server');
 
@@ -94,8 +81,6 @@ ticketbot.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
   mobileEnrollmentConversation =  _.filter(teamConversationList,
       {name: 'mobile-enrollment'}
   )[0];
-
-  getUsers();
 });
 
 // we want to get all the users and have a list of them to reference

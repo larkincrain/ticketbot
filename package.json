@@ -5,6 +5,9 @@
     "botkit": "^0.6.0",
     "https": "latest",
     "q": "^1.5.0",
-    "slackbots": "0.3.0"
+    "slackbots": "0.3.0",
+    "util": "latest",
+    "path": "latest",
+    "fs": "latest"
   }
 }
