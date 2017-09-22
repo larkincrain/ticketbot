@@ -14,45 +14,6 @@ module.exports = {
     console.log(message);
 
     if (message.text.indexOf('ticketbot') > -1  &&
-      message.text.indexOf('users') > -1) {
-
-      assembla.getUsers()
-        .then(function(users) {
-          var userNames = [];
-
-          assembla.setAssemblaUsers(users);
-
-          for (var count = 0; count < users.length; count ++) {
-            userNames[userNames.length] = users[count].name;
-          }
-
-          deferred.resolve(JSON.stringify(userNames));
-        })
-        .catch(function (error) {
-          console.log('whoops');
-          deferred.reject(JSON.stringify(error));
-        });
-    }
-    else if (message.text.indexOf('ticketbot') > -1  &&
-      message.text.indexOf('milestones') > -1) {
-
-        assembla.getMilestones()
-          .then(function(milestones) {
-            var milestoneNames = [];
-
-            for (var count = 0; count < milestones.length; count ++) {
-              milestoneNames[milestoneNames.length] = milestones[count].title;
-            }
-
-            deferred.resolve(JSON.stringify(milestoneNames));
-
-          })
-          .catch(function(error) {
-            console.log('whoops');
-            deferred.reject(JSON.stringify(error));
-          });
-    }
-    else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('thanks') > -1) {
         deferred.resolve(":sparkling_heart: You're quite welcome! :kissing_closed_eyes: ");
       }
@@ -166,6 +127,45 @@ module.exports = {
         }
 
         deferred.resolve(messageToSend);
+    }
+    else if (message.text.indexOf('ticketbot') > -1  &&
+      message.text.indexOf('milestones') > -1) {
+
+        assembla.getMilestones()
+          .then(function(milestones) {
+            var milestoneNames = [];
+
+            for (var count = 0; count < milestones.length; count ++) {
+              milestoneNames[milestoneNames.length] = milestones[count].title;
+            }
+
+            deferred.resolve(JSON.stringify(milestoneNames));
+
+          })
+          .catch(function(error) {
+            console.log('whoops');
+            deferred.reject(JSON.stringify(error));
+          });
+    }
+    else if (message.text.indexOf('ticketbot') > -1  &&
+      message.text.indexOf('users') > -1) {
+
+      assembla.getUsers()
+        .then(function(users) {
+          var userNames = [];
+
+          assembla.setAssemblaUsers(users);
+
+          for (var count = 0; count < users.length; count ++) {
+            userNames[userNames.length] = users[count].name;
+          }
+
+          deferred.resolve(JSON.stringify(userNames));
+        })
+        .catch(function (error) {
+          console.log('whoops');
+          deferred.reject(JSON.stringify(error));
+        });
     }
 
 
