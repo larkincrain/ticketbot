@@ -5,6 +5,10 @@ var assembla = require('./assemblaService.js');
 
 module.exports = {
 
+  isDataLoaded : function () {
+    return assembla.assembla_info.loaded;
+  },
+
   processMessage : function (message) {
 
     var deferred = q.defer();
@@ -25,6 +29,12 @@ module.exports = {
         var milestone = null;
         var milestoneTitle = message.text.substring(message.text.indexOf('milestone') + 10, message.text.length) || '';
         var tickets = [];
+
+        // check to make sure that data is loaded
+        if (!this.isDataLoaded()) {
+          return deferred.promise;
+          deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+        }
 
         milestone = _.find(assembla.assembla_info.milestones, function (milestone) {
           return milestone.title == milestoneTitle;
@@ -66,6 +76,12 @@ module.exports = {
 
         var messageToSend = '';
 
+        // check to make sure that data is loaded
+        if (!this.isDataLoaded()) {
+          return deferred.promise;
+          deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+        }
+
         _.forEach( assembla.assembla_info.milestones, function (milestone) {
 
           var intro = "Milestone " + milestone.title + " has : ";
@@ -74,7 +90,7 @@ module.exports = {
 
           _.forEach(milestone.tickets, function (ticket) {
             if (ticket.status == "New" ||
-                ticket.status == "In Progress" ||
+                ticket.status == "InProgress" ||
                 ticket.status == "Ready")
                 numberOfTickets ++;
           });
@@ -92,6 +108,12 @@ module.exports = {
           var messageToSend = "";
           var milestoneTitle = message.text.substring(message.text.indexOf('milestone') + 10, message.text.length) || '';
 
+          // check to make sure that data is loaded
+          if (!this.isDataLoaded()) {
+            return deferred.promise;
+            deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+          }
+
           var milestone = _.find(assembla.assembla_info.milestones, function (milestone) {
             return milestone.title == milestoneTitle;
           });
@@ -107,7 +129,7 @@ module.exports = {
               numberOfTickets = _.filter( milestone.tickets, function (ticket) {
                 if ( ticket.assigned_to_id == user.id &&
                     (ticket.status == "New" ||
-                    ticket.status == "In Progress" ||
+                    ticket.status == "InProgress" ||
                     ticket.status == "Ready") ) {
                     return true;
                   } else {
@@ -131,6 +153,12 @@ module.exports = {
     else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('milestones') > -1) {
 
+        // check to make sure that data is loaded
+        if (!this.isDataLoaded()) {
+          return deferred.promise;
+          deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+        }
+
         assembla.getMilestones()
           .then(function(milestones) {
             var milestoneNames = [];
@@ -150,6 +178,12 @@ module.exports = {
     else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('users') > -1) {
 
+      // check to make sure that data is loaded
+      if (!this.isDataLoaded()) {
+        return deferred.promise;
+        deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+      }
+
       assembla.getUsers()
         .then(function(users) {
           var userNames = [];
@@ -167,7 +201,6 @@ module.exports = {
           deferred.reject(JSON.stringify(error));
         });
     }
-
 
     return deferred.promise;
   }

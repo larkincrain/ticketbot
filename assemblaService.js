@@ -9,7 +9,12 @@ module.exports = {
   assembla_info : {
     users : [],
     milestones : [],
-    tickets : []
+    tickets : [],
+    loaded : false
+  },
+
+  setLoaded : function (loaded) {
+    this.assembla_info.loaded = loaded;
   },
 
   setAssemblaUsers : function (users) {

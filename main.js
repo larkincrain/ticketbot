@@ -88,6 +88,7 @@ ticketbot.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
             milestoneToEdit.tickets = tickets;
 
             assembla.setAssemblaMilestones(milestones, tickets);
+            assembla.setLoaded(true);
           });
       });
     });
