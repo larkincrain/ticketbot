@@ -345,7 +345,13 @@ module.exports = {
         pokemonService.getPokemon(random_number)
           .then( function (pokemon) {
             if (pokemon) {
-              deferred.resolve(":ok_woman: You've been granted a new pokemon companion! \r\n Take care of it and it'll help you on you journey! :sparkles: \r\n " + pokemon.sprites.front_default );
+
+              deferred.resolve(":ok_woman: You've been granted a new pokemon companion! :sparkles:" +
+              " \r\n " +
+              " \r\n *Companion*: :"+ pokemon.name + ":" +
+              " \r\n *Name*: " + pokemon.name +
+              " \r\n \r\n" +
+              pokemon.sprites.front_default );
             } else {
               deferred.resolve(":no_good: Look's like there are no pokemon around today, maybe try back in an hour? :bow:");
             }
