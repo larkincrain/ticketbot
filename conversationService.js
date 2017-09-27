@@ -1,7 +1,9 @@
 var _ = require('lodash');
 var q = require ('q');
+var rn = require('random-number');
 
 var assembla = require('./assemblaService.js');
+var pokemonService = require('./pokemonService.js');
 
 module.exports = {
 
@@ -328,6 +330,26 @@ module.exports = {
 
             deferred.resolve(JSON.stringify(response));
           })
+      }
+    else if (message.text.indexOf('ticketbot') > -1 &&
+      message.text.indexOf('pokemon companion') > -1) {
+
+        var options = {
+          min:  1
+          ,max:  151
+          ,integer: true
+        };
+
+        var random_number = rn(options);
+
+        pokemonService.getPokemon(random_number)
+          .then( function (pokemon) {
+            if (pokemon) {
+              deferred.resolve(":ok_woman: You've been granted a new pokemon companion! Take care of it and it'll help you on you journey! :sparkles: \r\n " + pokemon.sprites.front_default );
+            } else {
+              deferred.resolve(":no_good: Look's like there are no pokemon around today, maybe try back in an hour? :bow:");
+            }
+          });
       }
     return deferred.promise;
   }

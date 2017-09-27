@@ -2,7 +2,6 @@ var q = require ('q');
 var https = require('https');
 var _ = require('lodash');
 
-var pokemonService = require('./pokemonService.js');
 var credentials = require('./credentials.json');
 
 module.exports = {
