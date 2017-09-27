@@ -30,25 +30,27 @@ ticketbot.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
 
 ticketbot.on(RTM_EVENTS.MESSAGE, function (message) {
 
-  conversation.processMessage(message)
-    .then(function (message_text) {
-      ticketbot.sendMessage(
-        message_text,
-        message.channel,
-        function (){
-          console.log('Sassed em good, boss');
-        }
-      );
-    })
-    .catch (function (error) {
-      ticketbot.sendMessage(
-        JSON.stringify(error),
-        message.channel,
-        function (){
-          console.log('Sassed em good, boss');
-        }
-      );
-    });
+  if (message.text != null) {
+    conversation.processMessage(message)
+      .then(function (message_text) {
+        ticketbot.sendMessage(
+          message_text,
+          message.channel,
+          function (){
+            console.log('Sassed em good, boss');
+          }
+        );
+      })
+      .catch (function (error) {
+        ticketbot.sendMessage(
+          JSON.stringify(error),
+          message.channel,
+          function (){
+            console.log('Sassed em good, boss');
+          }
+        );
+      });  
+  }
 
 });
 
@@ -60,6 +62,12 @@ ticketbot.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
   assembla.getUsers()
     .then( function (users) {
       assembla.setAssemblaUsers (users);
+    });
+
+  assembla.getStatuses()
+    .then(function (statuses) {
+      console.log('statuses got: ' + statuses.length);
+      assembla.setStatuses(statuses);
     });
 
   // get all the tickets

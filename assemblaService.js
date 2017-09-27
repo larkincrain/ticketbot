@@ -10,6 +10,7 @@ module.exports = {
     users : [],
     milestones : [],
     tickets : [],
+    statuses : [],
     loaded : false
   },
 
@@ -39,7 +40,11 @@ module.exports = {
     milestoneToSaveTickets.tickets = tickets;
   },
 
-  assemblaAPIcall : function (path, method) {
+  setStatuses : function (statuses) {
+    this.assembla_info.statuses = statuses;
+  },
+
+  assemblaAPIcall : function (path, method, post_data) {
 
     var deferred = q.defer();
 
@@ -50,7 +55,8 @@ module.exports = {
       headers: {
         accept: "*/*",
         "X-Api-Key" : credentials.assembla_key,
-        "X-Api-Secret" : credentials.assembla_secret
+        "X-Api-Secret" : credentials.assembla_secret,
+        'Content-Type': 'application/json',
       }
     };
 
@@ -64,6 +70,11 @@ module.exports = {
         deferred.resolve(body);
       });
     });
+
+    // post the data
+    if (method == 'POST') {
+      req.write(post_data);
+    }
 
     req.end();
 
@@ -97,6 +108,25 @@ module.exports = {
     return deferred.promise;
   },
 
+  getStatuses : function () {
+
+    var deferred = q.defer();
+    var path = "/v1/spaces/oaftrac/tickets/statuses.json";
+    var method = "GET";
+
+    this.assemblaAPIcall(path, method)
+      .then(function (statuses) {
+        deferred.resolve(JSON.parse(statuses));
+      })
+      .catch(function (error) {
+        console.log(error);
+        deferred.reject(error);
+      });
+
+    return deferred.promise;
+
+  },
+
   // we want to get all the milestones so we have a reference
   getMilestones : function () {
 
@@ -128,7 +158,62 @@ module.exports = {
       });
 
     return deferred.promise;
+  },
+
+  updateTicketStatus : function (ticketNumber, status) {
+
+    var deferred = q.defer();
+    var path = "/v1/spaces/oaftrac/tickets/" + ticketNumber + "?ticket[status]=" + status;
+    var method = "PUT";
+
+    this.assemblaAPIcall(path, method)
+      .then(function (response){
+        deferred.resolve(response.statusCode);
+      })
+      .catch(function(error) {
+        deferred.resolve(response.statusCode);
+      });
+
+    return deferred.promise;
+  },
+
+  updateTicketMilestone : function (ticketNumber, milestone) {
+    var deferred = q.defer();
+    var path = "/v1/spaces/oaftrac/tickets/" + ticketNumber + "?ticket[milestone_id]=" + milestone;
+    var method = "PUT";
+
+    this.assemblaAPIcall(path, method)
+      .then(function (response){
+        deferred.resolve(response.statusCode);
+      })
+      .catch(function(error) {
+        deferred.resolve(response.statusCode);
+      });
+
+    return deferred.promise;
+  },
+
+  createMergeRequest : function (source_branch, target_branch, title) {
+    var deferred = q.defer();
+    var path = "/v1/spaces/oaftrac/space_tools/dn-D2MrQSr44o3acwqjQXA/merge_requests";
+    var method = "POST";
+    var post_data = {
+      "title" : title,
+      "source_symbol" : source_branch,
+      "target_symbol" : target_branch
+    };
+
+    this.assemblaAPIcall(path, method, JSON.stringify(post_data))
+      .then(function (response){
+        deferred.resolve(response);
+      })
+      .catch(function(error) {
+        deferred.resolve(response.statusCode);
+      });
+
+    return deferred.promise;
   }
+
 };
 
 return module.exports;

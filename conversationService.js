@@ -21,6 +21,75 @@ module.exports = {
       message.text.indexOf('thanks') > -1) {
         deferred.resolve(":sparkling_heart: You're quite welcome! :kissing_closed_eyes: ");
       }
+    else if (message.text.indexOf('ticketbot' > -1) &&
+      message.text.indexOf('update ticket #') > -1) {
+        var ticketnumber = "";
+        var status = "";
+
+        ticketNumber = message.text.substring(
+          message.text.indexOf('#') + 1,
+          message.text.indexOf(' ', message.text.indexOf('#') + 2)
+        );
+
+        status = message.text.substring(
+          message.text.indexOf('to ') + 3
+        );
+
+        // clean up the status
+        status = status.replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"")
+        status = status.replace(" ", "");
+
+        // check to make sure we have a valid status
+        var statusObj = _.find(assembla.assembla_info.statuses, function (statusName) {
+          console.log(status.name);
+          return (statusName.name.toLowerCase().replace(/\s/g,'') == status.toLowerCase().replace(/\s/g,''));
+        });
+
+        console.log('statuses: ' + assembla.assembla_info.statuses.length)
+        console.log('ticket #' + ticketNumber);
+        console.log('ticket status: ' + status);
+
+        // break out if we don't have a valid status
+        if (statusObj != null) {
+          assembla.updateTicketStatus(ticketNumber, status)
+            .then(function (response) {
+              deferred.resolve(":information_desk_person: :sparkles: ticket #" + ticketNumber + " has been updated to " + status + "! :sparkles: ");
+            });
+        } else {
+          deferred.resolve(':no_good: No such status, silly!');
+        }
+      }
+    else if (message.text.indexOf('ticketbot') > -1  &&
+      message.text.indexOf('assign ticket #') > -1) {
+        var ticketnumber = "";
+        var milestone = "";
+
+        ticketNumber = message.text.substring(
+          message.text.indexOf('#') + 1,
+          message.text.indexOf(' ', message.text.indexOf('#') + 2)
+        );
+
+        milestone = message.text.substring(
+          message.text.indexOf('to ') + 3
+        );
+
+        // clean up the status
+        milestone = milestone.replace(/[,\/#!?$%\^&\*;:{}=\-_`~()]/g,"")
+        milestone = milestone.replace(" ", "");
+
+        console.log('ticket #' + ticketNumber);
+        console.log('ticket milestone: ' + milestone);
+
+        // find the milestone
+        var milestoneObj = _.find(assembla.assembla_info.milestones, function(item) {
+          return item.title == milestone;
+        });
+
+        assembla.updateTicketMilestone(ticketNumber, milestoneObj.id)
+          .then(function (response) {
+            deferred.resolve(":information_desk_person: :sparkles: ticket #" + ticketNumber + " has been assigned to " + milestone + "! :sparkles: ");
+          });
+      }
     else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('which tickets are in milestone ') > -1) {
 
@@ -52,9 +121,13 @@ module.exports = {
                 author: ""
               };
 
-              upesiTicket.author = _.find(assembla.assembla_info.users, function (user) {
+              var foundUser = _.find(assembla.assembla_info.users, function (user) {
                 return user.id == ticket.assigned_to_id;
-              }).name;
+              });
+
+              if (foundUser != null) {
+                upesiTicket.author = foundUser.name;
+              }
 
               tickets[tickets.length] = upesiTicket;
             }
@@ -101,7 +174,7 @@ module.exports = {
         deferred.resolve(messageToSend);
     }
     else if (message.text.indexOf('ticketbot') > -1  &&
-        message.text.indexOf('who has open tickets in milestone ' > -1)) {
+        message.text.indexOf('who has open tickets in milestone ') > -1) {
 
           console.log('here');
 
@@ -118,92 +191,148 @@ module.exports = {
             return milestone.title == milestoneTitle;
           });
 
-          console.log(milestone);
+          if (milestone == null) {
+            deferred.resolve(":no_good: No such milestone, silly.");
+          } else {
 
-          if (milestone.tickets && milestone.tickets.length > 0) {
-            _.forEach( assembla.assembla_info.users, function(user) {
-              var intro = "" + user.name + " has ";
-              var numberOfTickets = 0;
-              var ending = " ticket(s) open.";
+              console.log(milestone);
 
-              numberOfTickets = _.filter( milestone.tickets, function (ticket) {
-                if ( ticket.assigned_to_id == user.id &&
-                    (ticket.status == "New" ||
-                    ticket.status == "InProgress" ||
-                    ticket.status == "Ready") ) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-              }).length;
+              // let's get some new tickets
+              assembla.getTicketsByMilestone(milestone.id)
+                .then( function (data) {
 
-              if (numberOfTickets > 0) {
-                messageToSend += intro + numberOfTickets + ending + "\r\n";
-              }
-              numberOfTickets = 0;
-            });
-        }
+                  assembla.setAssemblaTicketsByMilestone(milestone, data);
 
-        if (messageToSend.length == 0) {
-          messageToSend = ":tada: No open tickets! :tada:";
-        }
+                  if (milestone.tickets && milestone.tickets.length > 0) {
+                    _.forEach( assembla.assembla_info.users, function(user) {
+                      var intro = "" + user.name + " has ";
+                      var numberOfTickets = 0;
+                      var ending = " ticket(s) open.";
 
-        deferred.resolve(messageToSend);
+                      numberOfTickets = _.filter( milestone.tickets, function (ticket) {
+                        if ( ticket.assigned_to_id == user.id &&
+                            (ticket.status == "New" ||
+                            ticket.status == "InProgress" ||
+                            ticket.status == "Ready") ) {
+                            return true;
+                          } else {
+                            return false;
+                          }
+                      }).length;
+
+                      if (numberOfTickets > 0) {
+                        messageToSend += intro + numberOfTickets + ending + "\r\n";
+                      }
+                      numberOfTickets = 0;
+                    });
+                }
+
+                if (messageToSend.length == 0) {
+                  messageToSend = ":tada: No open tickets! :tada:";
+                }
+
+                deferred.resolve(messageToSend);
+              });
+          }
     }
     else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('milestones') > -1) {
 
         // check to make sure that data is loaded
         if (!this.isDataLoaded()) {
-          return deferred.promise;
           deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+        } else {
+
+          assembla.getMilestones()
+            .then(function(milestones) {
+              var milestoneNames = [];
+
+              for (var count = 0; count < milestones.length; count ++) {
+                milestoneNames[milestoneNames.length] = milestones[count].title;
+              }
+
+              deferred.resolve(JSON.stringify(milestoneNames));
+
+            })
+            .catch(function(error) {
+              console.log('whoops');
+              deferred.reject(JSON.stringify(error));
+            });
         }
-
-        assembla.getMilestones()
-          .then(function(milestones) {
-            var milestoneNames = [];
-
-            for (var count = 0; count < milestones.length; count ++) {
-              milestoneNames[milestoneNames.length] = milestones[count].title;
-            }
-
-            deferred.resolve(JSON.stringify(milestoneNames));
-
-          })
-          .catch(function(error) {
-            console.log('whoops');
-            deferred.reject(JSON.stringify(error));
-          });
     }
     else if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('users') > -1) {
 
       // check to make sure that data is loaded
       if (!this.isDataLoaded()) {
-        return deferred.promise;
         deferred.resolve("I'm sorry captain, I can't do that now. You see, we don't have the data. So chill for a sec. :tea:");
+      } else {
+
+        assembla.getUsers()
+          .then(function(users) {
+            var userNames = [];
+
+            assembla.setAssemblaUsers(users);
+
+            for (var count = 0; count < users.length; count ++) {
+              userNames[userNames.length] = users[count].name;
+            }
+
+            deferred.resolve(JSON.stringify(userNames));
+          })
+          .catch(function (error) {
+            console.log('whoops');
+            deferred.reject(JSON.stringify(error));
+          });
       }
-
-      assembla.getUsers()
-        .then(function(users) {
-          var userNames = [];
-
-          assembla.setAssemblaUsers(users);
-
-          for (var count = 0; count < users.length; count ++) {
-            userNames[userNames.length] = users[count].name;
-          }
-
-          deferred.resolve(JSON.stringify(userNames));
-        })
-        .catch(function (error) {
-          console.log('whoops');
-          deferred.reject(JSON.stringify(error));
-        });
     }
+    else if (message.text.indexOf('ticketbot') > -1  &&
+      message.text.indexOf('love you') > -1) {
+        deferred.resolve("Awww, thanks! :blush: \r\n But I already have bae :ring: :griff: :two_hearts:");
+      }
+    else if (message.text.indexOf('ticketbot') > -1 &&
+      message.text.indexOf('merge') > -1) {
+        // then we want to make a merge request
+        var source_branch = "";
+        var target_branch = "";
+        var title = "";
 
+        source_branch =
+          message.text.substring(
+            message.text.indexOf('merge ') + 6,
+            message.text.indexOf(' ', message.text.indexOf('merge ') + 6));
+
+        target_branch =
+          message.text.substring(
+            message.text.indexOf('into ') + 5,
+            message.text.indexOf(' ', message.text.indexOf('into ') + 5));
+
+        title =
+          message.text.substring(
+            message.text.indexOf(' ', message.text.indexOf('into ') + 5));
+
+        console.log('source: ' + source_branch);
+        console.log('target: ' + target_branch);
+        console.log('title: ' + title);
+
+        assembla.createMergeRequest(source_branch, target_branch, title)
+          .then(function(response) {
+
+            console.log(JSON.stringify(response));
+
+            if (JSON.parse(response).errors != null) {
+              deferred.resolve(":skull: Merge Request creation failed... please try again!");
+            } else {
+              deferred.resolve(":information_desk_person: :sparkles: Merge request created! :sparkles: \r\n:link: " + JSON.parse(response).url);
+            }
+
+            deferred.resolve(JSON.stringify(response));
+          })
+      }
     return deferred.promise;
   }
+
+
 
 };
 
