@@ -4,11 +4,13 @@
   "dependencies": {
     "botkit": "^0.6.0",
     "https": "latest",
+    "http": "latest",
     "q": "^1.5.0",
     "slackbots": "0.3.0",
     "util": "latest",
     "path": "latest",
     "fs": "latest",
-    "random-number": "latest"
+    "random-number": "latest",
+    "follow-redirects": "latest"
   }
 }
