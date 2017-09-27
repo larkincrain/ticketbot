@@ -6,7 +6,7 @@ slackbot that helps teams interact with their tickets.
 ### Merge Requests
 - Create a new merge request:
 ```
-  "tickbot merge {{source_branch}} into {{target_branch}} {{title}}"
+  "ticketbot merge {{source_branch}} into {{target_branch}} {{title}}"
 ```
 
 ### Edit tickets

@@ -331,9 +331,6 @@ module.exports = {
       }
     return deferred.promise;
   }
-
-
-
 };
 
 return module.exports;
