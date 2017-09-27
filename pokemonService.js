@@ -14,9 +14,7 @@ module.exports = {
       method: method,
       headers: {
         accept: "*/*",
-        "X-Api-Key" : credentials.assembla_key,
-        "X-Api-Secret" : credentials.assembla_secret,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }
     };
 
