@@ -8,6 +8,7 @@
     "slackbots": "0.3.0",
     "util": "latest",
     "path": "latest",
-    "fs": "latest"
+    "fs": "latest",
+    "random-number": "latest"
   }
 }
