@@ -1,35 +1,53 @@
 # ticketbot
 slackbot that helps teams interact with their tickets.
 
-# features
+## features
 
-// Merge Requests
-- Create a new merge request \r\n
+### Merge Requests
+- Create a new merge request:
+```
   "tickbot merge {{source_branch}} into {{target_branch}} {{title}}"
+```
 
-// Edit tickets
-- Change the status of a tickets \r\n
+### Edit tickets
+- Change the status of a tickets:
+```
   "ticketbot update ticket #{{ticket_number}} to {{status}}"
+```
 
-- Change the milestone of a ticket \r\n
+- Change the milestone of a ticket:
+```
   "ticketbot assign ticket #{{ticket_number}} to {{milestone}}"
+```
 
-// Queries
-- See which users have open (New, InProgress, Ready) tickets in a milestone: \r\n
+### Queries
+- See which users have open (New, InProgress, Ready) tickets in a milestone:
+```
   "ticketbot who has open tickets in milestone {{milestone}}"
+```
 
-- See how many open (New, InProgress, Ready) tickets are in all milestones: \r\n
+- See how many open (New, InProgress, Ready) tickets are in all milestones:
+```
   "ticketbot how many tickets are open in all milestones"
+```
 
-- See which milestones are open: \r\n
+- See which milestones are open:
+```
   "ticketbot milestones"
+```
 
-- See which users are active: \r\n
+- See which users are active:
+```
   "ticketbot users"
+```
 
-// Fun
-- Say I love you! \r\n
+### Fun
+- Say I love you!
+```
   "ticketbot I love you"
+```
 
-- Say thanks! \r\n
+- Say thanks!
+```
   "ticketbot thanks"
+```
