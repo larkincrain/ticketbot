@@ -19,6 +19,19 @@ module.exports = {
     console.log('New message: ');
     console.log(message);
 
+    var user_name = "";
+    var personal_assistant = ":information_desk_person:"
+    var user = pokemonService.getUserInfo(user_name);
+    
+    console.log(JSON.stringify(user));
+    // see if the user has a personal avatar that we need to use
+    if (user != null) {
+      // then we need to use the avatar of the pokemon
+      personal_assistant = ":" + user.pokemon_name + ":";
+    }
+
+    console.log(personal_assistant);
+
     if (message.text.indexOf('ticketbot') > -1  &&
       message.text.indexOf('thanks') > -1) {
         deferred.resolve(":sparkling_heart: You're quite welcome! :kissing_closed_eyes: ");
@@ -55,7 +68,7 @@ module.exports = {
         if (statusObj != null) {
           assembla.updateTicketStatus(ticketNumber, status)
             .then(function (response) {
-              deferred.resolve(":information_desk_person: :sparkles: ticket #" + ticketNumber + " has been updated to " + status + "! :sparkles: ");
+              deferred.resolve(personal_assistant + " :sparkles: ticket #" + ticketNumber + " has been updated to " + status + "! :sparkles: ");
             });
         } else {
           deferred.resolve(':no_good: No such status, silly!');
@@ -89,7 +102,7 @@ module.exports = {
 
         assembla.updateTicketMilestone(ticketNumber, milestoneObj.id)
           .then(function (response) {
-            deferred.resolve(":information_desk_person: :sparkles: ticket #" + ticketNumber + " has been assigned to " + milestone + "! :sparkles: ");
+            deferred.resolve(personal_assistant + " :sparkles: ticket #" + ticketNumber + " has been assigned to " + milestone + "! :sparkles: ");
           });
       }
     else if (message.text.indexOf('ticketbot') > -1  &&
@@ -325,7 +338,7 @@ module.exports = {
             if (JSON.parse(response).errors != null) {
               deferred.resolve(":skull: Merge Request creation failed... please try again!");
             } else {
-              deferred.resolve(":information_desk_person: :sparkles: Merge request created! :sparkles: \r\n:link: " + JSON.parse(response).url);
+              deferred.resolve(personal_assistant + " :sparkles: Merge request created! :sparkles: \r\n:link: " + JSON.parse(response).url);
             }
 
             deferred.resolve(JSON.stringify(response));

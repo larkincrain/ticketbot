@@ -6,6 +6,36 @@ var _ = require('lodash');
 
 module.exports = {
 
+  user_info : [],
+
+  addUserInfo : function (user_name, pokemon_name) {
+
+    // first see if there already exists a record for this user_name
+    if (this.getUserInfo (user_name) == null) {
+      // then we want to add a new record
+      this.user_info[user_info.length] = {
+        user_name : user_name,
+        pokemon_name : pokemon_name
+      };
+
+    } else {
+      // then we need to update the existing record
+      this.getUserInfo(user_name).pokemon_name = pokemon_name;
+    };
+
+    return true;
+  },
+
+  getUserInfo : function (user_name) {
+    // we need to find a record in the user_info array with the user's name
+
+    var user = _.find(this.user_info, function (user) {
+      return user.user_name == user_name;
+    });
+
+    return user;
+  },
+
   pokemonAPIcall : function (path, method, post_data) {
 
     var deferred = q.defer();
