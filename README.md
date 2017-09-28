@@ -51,3 +51,8 @@ slackbot that helps teams interact with their tickets.
 ```
   "ticketbot thanks"
 ```
+
+- Summon a pokemon companion
+```
+  "ticketbot i need help"
+```

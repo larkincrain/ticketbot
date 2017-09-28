@@ -332,7 +332,8 @@ module.exports = {
           })
       }
     else if (message.text.indexOf('ticketbot') > -1 &&
-      message.text.indexOf('pokemon companion') > -1) {
+      message.text.toLowerCase().indexOf('i need') > -1 &&
+      message.text.toLowerCase().indexOf('help') > -1) {
 
         var options = {
           min:  1
@@ -346,12 +347,20 @@ module.exports = {
           .then( function (pokemon) {
             if (pokemon) {
 
+              var types = "";
+              _.forEach(pokemon.types, function (type) {
+                types += type.type.name + ", ";
+              });
+
               deferred.resolve(":ok_woman: You've been granted a new pokemon companion! :sparkles:" +
               " \r\n " +
               " \r\n *Companion*: :"+ pokemon.name + ":" +
               " \r\n *Name*: " + pokemon.name +
+              " \r\n *Types*: " + types +
               " \r\n \r\n" +
-              pokemon.sprites.front_default );
+              " take good care of it and it'll help you when you're in need! " +
+              " \r\n \r\n" +
+              pokemon.sprites.front_shiny );
             } else {
               deferred.resolve(":no_good: Look's like there are no pokemon around today, maybe try back in an hour? :bow:");
             }
