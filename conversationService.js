@@ -22,7 +22,7 @@ module.exports = {
     var user_name = "";
     var personal_assistant = ":information_desk_person:"
     var user = pokemonService.getUserInfo(user_name);
-    
+
     console.log(JSON.stringify(user));
     // see if the user has a personal avatar that we need to use
     if (user != null) {
@@ -373,7 +373,7 @@ module.exports = {
               " \r\n \r\n" +
               " take good care of it and it'll help you when you're in need! " +
               " \r\n \r\n" +
-              pokemon.sprites.front_shiny );
+              pokemon.sprites.front_default );
             } else {
               deferred.resolve(":no_good: Look's like there are no pokemon around today, maybe try back in an hour? :bow:");
             }
