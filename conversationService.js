@@ -360,7 +360,7 @@ module.exports = {
               " \r\n \r\n" +
               " take good care of it and it'll help you when you're in need! " +
               " \r\n \r\n" +
-              pokemon.sprites.front_shiny );
+              pokemon.sprites.front_default );
             } else {
               deferred.resolve(":no_good: Look's like there are no pokemon around today, maybe try back in an hour? :bow:");
             }
