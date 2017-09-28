@@ -332,7 +332,6 @@ module.exports = {
           })
       }
     else if (message.text.indexOf('ticketbot') > -1 &&
-      message.text.toLowerCase().indexOf('i need') > -1 &&
       message.text.toLowerCase().indexOf('help') > -1) {
 
         var options = {
